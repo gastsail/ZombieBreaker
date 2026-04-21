@@ -1,119 +1,137 @@
-# IntelliJ Platform Plugin Template
+# ZombieBreaker 🧟‍♂️🛡️
 
-[![Twitter Follow](https://img.shields.io/badge/follow-%40JBPlatform-1DA1F2?logo=twitter)](https://twitter.com/JBPlatform)
-[![Developers Forum](https://img.shields.io/badge/JetBrains%20Platform-Join-blue)][jb:forum]
+**ZombieBreaker** es un plugin para Android Studio diseñado para detener la práctica del "Copy-Paste" ciego. Su objetivo es asegurar que cada desarrollador entienda exactamente qué código está integrando en su proyecto antes de que este llegue al editor.
 
-## Plugin template structure
+---
 
-A generated project contains the following content structure:
+## 📝 El Concepto: "Entender antes de Pegar"
 
-```
-.
-├── .run/                   Predefined Run/Debug Configurations
-├── build/                  Output build directory
-├── gradle
-│   ├── wrapper/            Gradle Wrapper
-│   ├── libs.versions.toml  Version catalog
-├── src                     Plugin sources
-│   ├── main
-│   │   ├── kotlin/         Kotlin production sources
-│   │   └── resources/      Resources - plugin.xml, icons, messages
-├── .gitignore              Git ignoring rules
-├── build.gradle.kts        Gradle build configuration
-├── gradle.properties       Gradle configuration properties
-├── gradlew                 *nix Gradle Wrapper script
-├── gradlew.bat             Windows Gradle Wrapper script
-├── README.md               README
-└── settings.gradle.kts     Gradle project settings
-```
+A diferencia de otros asistentes de IA, **ZombieBreaker** actúa como un guardián en tu portapapeles. Cuando intentas pegar código proveniente de una fuente externa (StackOverflow, documentación, ChatGPT, etc.), el plugin intercepta la acción y te desafía:
 
-In addition to the configuration files, the most crucial part is the `src` directory, which contains our implementation
-and the manifest for our plugin – [plugin.xml][file:plugin.xml].
+1.  **Contexto Inteligente:** El plugin analiza el archivo actual donde intentas pegar el código para entender el entorno (clases, variables y lógica existente).
+2.  **Análisis Local:** Utiliza IA local para procesar el código que intentas pegar.
+3.  **Validación de Comprensión:** Debes explicar con tus propias palabras qué hace ese código. 
+4.  **Aprobación:** El plugin compara tu explicación con el análisis real del código. Si tu comprensión es correcta, el código se pega. Si no, te ayuda a entenderlo mejor antes de permitir la inserción.
 
-> [!NOTE]
-> To use Java in your plugin, create the `/src/main/java` directory.
+---
 
-## Plugin configuration file
+## 🚀 Requisitos Previos
 
-The plugin configuration file is a [plugin.xml][file:plugin.xml] file located in the `src/main/resources/META-INF`
-directory.
-It provides general information about the plugin, its dependencies, extensions, and listeners.
+Para que ZombieBreaker pueda analizar el código localmente, necesitas configurar **Ollama**:
 
-You can read more about this file in the [Plugin Configuration File][docs:plugin.xml] section of our documentation.
+1.  **Instalar Ollama:** Descárgalo en [https://ollama.com/](https://ollama.com/).
+2.  **Descargar el Modelo Gemma 4:** Abre una terminal y ejecuta el siguiente comando:
+    ```bash
+    ollama run gemma4
+    ```
+    *(Nota: Mantén Ollama ejecutándose en segundo plano mientras programas en Android Studio).*
 
-If you're still not quite sure what this is all about, read our
-introduction: [What is the IntelliJ Platform?][docs:intro]
+---
 
-$H$H Predefined Run/Debug configurations
+## 🛠️ Instalación
 
-Within the default project structure, there is a `.run` directory provided containing predefined *Run/Debug
-configurations* that expose corresponding Gradle tasks:
+Actualmente, el plugin se distribuye como un archivo de release para instalación manual:
 
-| Configuration name | Description                                                                                                                                                                         |
-|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Run Plugin         | Runs [`:runIde`][gh:intellij-platform-gradle-plugin-runIde] IntelliJ Platform Gradle Plugin task. Use the *Debug* icon for plugin debugging.                                        |
-| Run Tests          | Runs [`:test`][gradle:lifecycle-tasks] Gradle task.                                                                                                                                 |
-| Run Verifications  | Runs [`:verifyPlugin`][gh:intellij-platform-gradle-plugin-verifyPlugin] IntelliJ Platform Gradle Plugin task to check the plugin compatibility against the specified IntelliJ IDEs. |
+1.  **Descarga el archivo:** Ve a la pestaña de [Releases](https://github.com/tu-usuario/zombiebreaker/releases) y baja el archivo `.zip`.
+2.  **Instalación en Android Studio:**
+    * Abre **Android Studio**.
+    * Ve a `File` > `Settings` (en macOS: `Android Studio` > `Settings`).
+    * Selecciona la sección **Plugins**.
+    * Haz clic en el icono del engranaje (⚙️) y selecciona **Install Plugin from Disk...**.
+    * Busca y selecciona el archivo `.zip` descargado.
+3.  **Reiniciar:** Reinicia el IDE para activar la protección de ZombieBreaker.
 
-> [!NOTE]
-> You can find the logs from the running task in the `idea.log` tab.
+---
 
-## Publishing the plugin
+## 📖 Cómo usarlo
 
-> [!TIP]
-> Make sure to follow all guidelines listed in [Publishing a Plugin][docs:publishing] to follow all recommended and
-> required steps.
+Una vez instalado, el plugin monitorea la acción de "Pegar" (`Ctrl+V` o `Cmd+V`):
 
-Releasing a plugin to [JetBrains Marketplace](https://plugins.jetbrains.com) is a straightforward operation that uses
-the `publishPlugin` Gradle task provided by
-the [intellij-platform-gradle-plugin][gh:intellij-platform-gradle-plugin-docs].
+1.  Copia cualquier código externo.
+2.  Al intentar pegarlo en tu archivo de Android Studio, aparecerá una ventana de **ZombieBreaker**.
+3.  Lee el análisis del contexto que el plugin ha realizado.
+4.  Escribe una breve explicación de lo que crees que hace ese código.
+5.  Si la validación es positiva, el código se integrará en tu archivo.
 
-You can also upload the plugin to the [JetBrains Plugin Repository](https://plugins.jetbrains.com/plugin/upload)
-manually via UI.
+---
 
-## Useful links
+## 🔒 Privacidad y Seguridad Total
 
-- [IntelliJ Platform SDK Plugin SDK][docs]
-- [IntelliJ Platform Gradle Plugin Documentation][gh:intellij-platform-gradle-plugin-docs]
-- [IntelliJ Platform Explorer][jb:ipe]
-- [JetBrains Marketplace Quality Guidelines][jb:quality-guidelines]
-- [IntelliJ Platform UI Guidelines][jb:ui-guidelines]
-- [JetBrains Marketplace Paid Plugins][jb:paid-plugins]
-- [IntelliJ SDK Code Samples][gh:code-samples]
+ZombieBreaker está diseñado para entornos profesionales donde la seguridad es crítica:
 
-[docs]: https://plugins.jetbrains.com/docs/intellij
+* **Procesamiento 100% Local:** Gracias a **Ollama** y **Gemma 4**, ni el código de tu proyecto ni el código que pegas salen nunca de tu máquina.
+* **Sin Nube:** No requiere conexión a internet ni suscripciones a servicios externos.
+* **Privacidad por Diseño:** Ideal para trabajar en proyectos confidenciales o corporativos.
 
-[docs:intro]: https://plugins.jetbrains.com/docs/intellij/intellij-platform.html?from=IJPluginTemplate
+---
+*ZombieBreaker - Porque programar es entender, no solo copiar.*
 
-[docs:plugin.xml]: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html?from=IJPluginTemplate
 
-[docs:publishing]: https://plugins.jetbrains.com/docs/intellij/publishing-plugin.html?from=IJPluginTemplate
+## [EN]
+# ZombieBreaker 🧟‍♂️🛡️
 
-[file:plugin.xml]: ./src/main/resources/META-INF/plugin.xml
+**ZombieBreaker** is an Android Studio plugin designed to put an end to "blind copy-pasting." Its mission is to ensure that every developer fully understands the code they are integrating into their project before it even hits the editor.
 
-[gh:code-samples]: https://github.com/JetBrains/intellij-sdk-code-samples
+---
 
-[gh:intellij-platform-gradle-plugin]: https://github.com/JetBrains/intellij-platform-gradle-plugin
+## 📝 The Concept: "Understand Before You Paste"
 
-[gh:intellij-platform-gradle-plugin-docs]: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html
+Unlike traditional AI assistants, **ZombieBreaker** acts as a guardian for your clipboard. When you attempt to paste code from an external source (StackOverflow, documentation, LLMs, etc.), the plugin intercepts the action and challenges you:
 
-[gh:intellij-platform-gradle-plugin-runIde]: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-tasks.html#runIde
+1.  **Smart Context Awareness:** The plugin analyzes the current file where you intend to paste the code to understand the environment (existing classes, variables, and logic).
+2.  **Local AI Analysis:** It uses local power to process the code sitting in your clipboard.
+3.  **Comprehension Check:** You are required to explain in your own words what that code does.
+4.  **Verification:** The plugin compares your explanation with its own real-time analysis. If your understanding is correct, the code is pasted. If not, it helps you understand it better before allowing the insertion.
 
-[gh:intellij-platform-gradle-plugin-verifyPlugin]: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-tasks.html#verifyPlugin
+---
 
-[gradle:lifecycle-tasks]: https://docs.gradle.org/current/userguide/java_plugin.html#lifecycle_tasks
+## 🚀 Prerequisites
 
-[jb:github]: https://github.com/JetBrains/.github/blob/main/profile/README.md
+To enable local code analysis, you must set up **Ollama** on your machine:
 
-[jb:forum]: https://platform.jetbrains.com/
+1.  **Install Ollama:** Download it from [https://ollama.com/](https://ollama.com/).
+2.  **Download Gemma 4:** Open your terminal and run the following command:
+    ```bash
+    ollama run gemma4
+    ```
+    *(Note: Ensure Ollama is running in the background while you are using Android Studio).*
 
-[jb:quality-guidelines]: https://plugins.jetbrains.com/docs/marketplace/quality-guidelines.html
+---
 
-[jb:paid-plugins]: https://plugins.jetbrains.com/docs/marketplace/paid-plugins-marketplace.html
+## 🛠️ Installation
 
-[jb:quality-guidelines]: https://plugins.jetbrains.com/docs/marketplace/quality-guidelines.html
+Currently, the plugin is distributed as a release file for manual installation:
 
-[jb:ipe]: https://jb.gg/ipe
+1.  **Download the Release:** Go to the [Releases](https://github.com/your-username/zombiebreaker/releases) tab and download the latest `.zip` file.
+2.  **Install in Android Studio:**
+    * Open **Android Studio**.
+    * Go to `File` > `Settings` (on macOS: `Android Studio` > `Settings`).
+    * Select the **Plugins** section.
+    * Click the gear icon (⚙️) and select **Install Plugin from Disk...**.
+    * Locate and select the downloaded `.zip` file.
+3.  **Restart:** Restart the IDE to activate the ZombieBreaker protection.
 
-[jb:ui-guidelines]: https://jetbrains.github.io/ui
-# ZombieBreaker
+---
+
+## 📖 How to Use
+
+Once installed, the plugin monitors the "Paste" action (`Ctrl+V` or `Cmd+V`):
+
+1.  Copy any external code snippet.
+2.  When you try to paste it into your Android Studio file, the **ZombieBreaker** window will appear.
+3.  Review the context analysis performed by the plugin.
+4.  Write a brief explanation of what you think the code does.
+5.  Once validated, the code will be successfully integrated into your file.
+
+---
+
+## 🔒 Privacy & Total Security
+
+ZombieBreaker is built for professional environments where security is paramount:
+
+* **100% Local Processing:** Thanks to **Ollama** and **Gemma 4**, neither your project's code nor the code you paste ever leaves your machine.
+* **No Cloud:** It requires no internet connection or third-party subscriptions.
+* **Privacy by Design:** Perfect for working on confidential or corporate projects where data leakage is not an option.
+
+---
+*ZombieBreaker - Because programming is about understanding, not just copying.*
