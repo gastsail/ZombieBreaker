@@ -8,21 +8,23 @@
     <name>ZombieBreaker</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-    <vendor url="https://www.yourcompany.com">YourCompany</vendor>
+    <vendor url="https://www.yourcompany.com">GastonSaillen</vendor>
 
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
     <description><![CDATA[
-        Enter short description for your plugin here.<br>
-        <em>most HTML tags may be used</em>
-        ]]></description>
+  <p><b>Zombie Breaker</b> combate el desarrollo "zombie" interceptando el código pegado desde fuentes externas.</p>
+  <ul>
+    <li><b>Consciencia:</b> Obliga a explicar la lógica antes de integrar código.</li>
+    <li><b>Privacidad:</b> IA 100% local con Gemma + Ollama.</li>
+    <li><b>Calidad:</b> Reduce la deuda técnica fomentando el entendimiento.</li>
+  </ul>
+]]></description>
 
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.java</depends>
     <depends>org.jetbrains.kotlin</depends>
-
-    <resource-bundle>messages.MyMessageBundle</resource-bundle>
 
     <!-- Extensions defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
