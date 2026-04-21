@@ -1,5 +1,3 @@
-package com.gastonsaillen.zombiebreaker
-
 import com.intellij.codeInsight.editorActions.CopyPastePreProcessor
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.RawText

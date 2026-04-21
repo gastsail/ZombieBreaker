@@ -29,7 +29,7 @@
     <!-- Extensions defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <copyPastePreProcessor implementation="com.gastonsaillen.zombiebreaker.ZombiePastePreProcessor"/>
+        <copyPastePreProcessor implementation="ZombiePastePreProcessor"/>
     </extensions>
     <extensions defaultExtensionNs="org.jetbrains.kotlin">
         <supportsKotlinPluginMode supportsK2="true"/>

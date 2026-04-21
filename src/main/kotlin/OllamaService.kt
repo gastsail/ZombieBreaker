@@ -1,5 +1,3 @@
-package com.gastonsaillen.zombiebreaker
-
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +24,8 @@ object OllamaService {
     suspend fun validateExplanation(
         fileContext: String,
         pastedCode: String,
-        userExplanation: String
+        userExplanation: String,
+        language: String
     ): ValidationResult = withContext(Dispatchers.IO) {
         val promptText = """
     Actúa como un compañero de equipo pragmático haciendo un Code Review rápido. Tu misión es asegurar que el usuario leyó y entendió el código que está pegando, sin ser molesto ni excesivamente estricto.
@@ -52,6 +51,8 @@ object OllamaService {
     
     EXPLICACIÓN DEL USUARIO: 
     "$userExplanation"
+    
+    IMPORTANT: You MUST write the "reason" and "hint" fields in $language language.
     
     Responde ÚNICAMENTE en formato JSON:
     {
@@ -87,7 +88,6 @@ object OllamaService {
         val accuracy =
             if (innerJson.has("accuracy") && !innerJson.get("accuracy").isJsonNull) innerJson.get("accuracy").asInt else 0
 
-        // Mantenemos nuestra regla dura en Kotlin por seguridad
         val isApproved = accuracy > 80
 
         val hint =
