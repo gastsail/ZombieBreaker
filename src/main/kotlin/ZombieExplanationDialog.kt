@@ -4,7 +4,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
-import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBUI
 import kotlinx.coroutines.*
@@ -18,28 +17,43 @@ class ZombieExplanationDialog(
     private val pastedCode: String
 ) : DialogWrapper(project) {
 
-    private val explanationTextArea = JTextArea()
+    // --- Componentes Izquierda (Código) ---
     private val codePreviewArea = JTextArea(pastedCode)
-
-    private val progressBar = JProgressBar().apply { isIndeterminate = true; isVisible = false }
-    private val statusLabel = JBLabel().apply { isVisible = false; font = font.deriveFont(Font.BOLD) }
-    private val hintLabel = JBLabel().apply { isVisible = false; foreground = Color.GRAY }
-
-    // Definimos el color del resaltado (Un verde oscuro que contrasta bien con el fondo del código)
     private val successHighlightPainter = DefaultHighlighter.DefaultHighlightPainter(Color(45, 90, 45))
+
+    // --- Componentes Derecha (Chat) ---
+    private val chatHistoryPanel = JPanel()
+    private val chatScrollPane: JBScrollPane
+    private val inputTextArea = JTextArea()
+    private val progressBar = JProgressBar().apply { isIndeterminate = true; isVisible = false }
 
     private var rejectionCount = 0
     private val dialogScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     init {
-        title = "🧟 Zombie Breaker - Análisis de Código"
+        title = "🧟 Zombie Breaker - Code Review"
+        setOKButtonText("Enviar Explicación")
+        setCancelButtonText("Cancelar Pegado")
+
+        chatHistoryPanel.layout = BoxLayout(chatHistoryPanel, BoxLayout.Y_AXIS)
+        chatHistoryPanel.border = JBUI.Borders.empty(10)
+        chatScrollPane = JBScrollPane(chatHistoryPanel).apply {
+            border = BorderFactory.createTitledBorder("Conversación con el Tech Lead")
+            horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+        }
+
         init()
+
+        // El mensaje inicial no necesita animación para no hacer esperar al usuario
+        addChatMessage(
+            text = "¡Hola! 👋 Detecté que intentas pegar este bloque de código externo. Para mantener la calidad del proyecto, ¿podrías explicarme brevemente qué hace y cómo se integra aquí?",
+            isUser = false
+        )
     }
 
     override fun createCenterPanel(): JComponent {
         val mainPanel = JPanel(BorderLayout(0, JBUI.scale(10)))
 
-        // 1. Configuración del código (Izquierda)
         codePreviewArea.apply {
             font = Font("Monospaced", Font.PLAIN, 12)
             isEditable = false
@@ -51,83 +65,86 @@ class ZombieExplanationDialog(
             border = BorderFactory.createTitledBorder("Código a pegar")
         }
 
-        // 2. Configuración de la explicación (Derecha)
-        explanationTextArea.apply {
+        inputTextArea.apply {
             lineWrap = true
             wrapStyleWord = true
             margin = JBUI.insets(10)
+            rows = 3
         }
-        val explanationScrollPane = JBScrollPane(explanationTextArea).apply {
-            border = BorderFactory.createTitledBorder("Tu explicación")
+        val inputScrollPane = JBScrollPane(inputTextArea)
+
+        val inputPanel = JPanel(BorderLayout()).apply {
+            border = BorderFactory.createTitledBorder("Tu respuesta")
+            add(inputScrollPane, BorderLayout.CENTER)
+            add(progressBar, BorderLayout.NORTH)
         }
 
-        val splitPane = JSplitPane(JSplitPane.HORIZONTAL_SPLIT, codeScrollPane, explanationScrollPane).apply {
+        val chatContainer = JPanel(BorderLayout(0, 5)).apply {
+            add(chatScrollPane, BorderLayout.CENTER)
+            add(inputPanel, BorderLayout.SOUTH)
+        }
+
+        val splitPane = JSplitPane(JSplitPane.HORIZONTAL_SPLIT, codeScrollPane, chatContainer).apply {
             dividerLocation = 400
-            preferredSize = Dimension(850, 400)
+            preferredSize = Dimension(900, 500)
         }
 
-        // 3. Panel de Feedback (Inferior)
-        val feedbackPanel = JPanel().apply {
-            layout = BoxLayout(this, BoxLayout.Y_AXIS)
-            add(progressBar)
-            add(Box.createVerticalStrut(5))
-            add(statusLabel)
-            add(Box.createVerticalStrut(5))
-            add(hintLabel)
-        }
-
-        val headerLabel = JLabel("<html><b>¿Qué hace este código?</b> Explica la función general para evitar ser un 'Copy-Paste Zombie'.</html>")
-        headerLabel.border = JBUI.Borders.emptyBottom(10)
-
-        mainPanel.add(headerLabel, BorderLayout.NORTH)
         mainPanel.add(splitPane, BorderLayout.CENTER)
-        mainPanel.add(feedbackPanel, BorderLayout.SOUTH)
-
         return mainPanel
     }
 
     override fun doOKAction() {
-        val explanation = explanationTextArea.text
-        if (explanation.isBlank()) {
-            showFeedback("Debes escribir algo.", Color.ORANGE)
-            return
-        }
+        val explanation = inputTextArea.text
+        if (explanation.isBlank()) return
 
+        // Añadimos el mensaje del usuario al instante
+        addChatMessage(explanation, isUser = true)
+        inputTextArea.text = ""
         setLoading(true)
 
         dialogScope.launch {
             try {
+                // 1. Esperamos a que Ollama responda (Barra de carga activa)
                 val result = OllamaService.validateExplanation(fileContext, pastedCode, explanation)
 
+                // 2. Ollama respondió, quitamos el loading e iniciamos la animación de escritura
+                updateUI {
+                    setLoading(false)
+                    isOKActionEnabled = false
+                    inputTextArea.isEnabled = false
+                }
+
                 if (result.approved) {
-                    updateUI {
-                        setLoading(false)
-                        // Limpiamos hints y bloqueamos para el conteo final
-                        hintLabel.isVisible = false
-                        explanationTextArea.isEnabled = false
-                        isOKActionEnabled = false
+                    updateUI { highlightUnderstoodCode(pastedCode) }
 
-                        // En éxito total, pintamos TODO el código de verde
-                        highlightUnderstoodCode(pastedCode)
-                    }
+                    // EFECTO DE ESCRITURA
+                    animateBotMessage("✅ ¡Excelente! Explicación aprobada (Precisión: ${result.accuracy}%).")
 
-                    for (i in 5 downTo 1) {
-                        updateUI {
-                            showFeedback("✅ ¡Aprobado (Precisión: ${result.accuracy}%)! Pegando en $i...", Color.GREEN.darker())
-                        }
-                        delay(1000)
-                    }
+                    // Conteo regresivo actualizado en la misma burbuja
+                    startCountdown()
 
                     updateUI { close(OK_EXIT_CODE) }
 
                 } else {
-                    // --- CASO RECHAZADO ---
-                    updateUI {
-                        setLoading(false)
-                        rejectionCount++
+                    rejectionCount++
 
-                        // Mostramos error y resaltamos lo que SÍ entendió
-                        handleFailure(result)
+                    // EFECTO DE ESCRITURA PARA EL RECHAZO
+                    animateBotMessage("❌ Mmm, no me convence (Precisión: ${result.accuracy}%).\n\n${result.reason}")
+
+                    updateUI {
+                        if (!result.understoodCode.isNullOrBlank()) {
+                            highlightUnderstoodCode(result.understoodCode)
+                        }
+
+                        // Rehabilitamos el input para que vuelva a intentar
+                        inputTextArea.isEnabled = true
+                        isOKActionEnabled = true
+                        inputTextArea.requestFocusInWindow()
+                    }
+
+                    if (rejectionCount >= 3) {
+                        delay(500) // Pequeña pausa antes de dar la pista
+                        animateBotMessage("💡 Pista: ${result.hint ?: "Intenta explicar la intención general."}", isSystemLog = true)
                     }
                 }
             } catch (e: CancellationException) {
@@ -135,48 +152,124 @@ class ZombieExplanationDialog(
             } catch (e: Throwable) {
                 updateUI {
                     setLoading(false)
-                    showFeedback("⚠️ Error: ${e.localizedMessage}", Color.RED)
+                    inputTextArea.isEnabled = true
+                    isOKActionEnabled = true
                 }
+                animateBotMessage("⚠️ Error de conexión: ${e.localizedMessage}")
             }
         }
     }
 
-    private fun handleFailure(result: ValidationResult) {
-        // 1. Mostrar mensaje de error con el %
-        showFeedback("❌ Rechazado (Precisión: ${result.accuracy}%): ${result.reason}", Color.RED)
+    // --- Animacion texto chat ---
 
-        // 2. Resaltar en el panel izquierdo las líneas validadas por la IA
-        if (!result.understoodCode.isNullOrBlank()) {
-            highlightUnderstoodCode(result.understoodCode)
+    private suspend fun animateBotMessage(fullText: String, isSystemLog: Boolean = false) {
+        // 1. Creamos la burbuja vacía en el hilo de la UI y obtenemos su referencia
+        var messageArea: JTextArea? = null
+        val deferred = CompletableDeferred<Unit>()
+
+        ApplicationManager.getApplication().invokeLater({
+            messageArea = addChatMessage("", isUser = false, isSystemLog = isSystemLog)
+            deferred.complete(Unit)
+        }, ModalityState.any())
+
+        deferred.await() // Esperamos a que la UI esté lista
+
+        // 2. Escribimos letra por letra
+        val currentText = StringBuilder()
+        for (char in fullText) {
+            currentText.append(char)
+
+            ApplicationManager.getApplication().invokeLater({
+                messageArea?.text = currentText.toString()
+
+                // Auto-scroll
+                val verticalBar = chatScrollPane.verticalScrollBar
+                verticalBar.value = verticalBar.maximum
+            }, ModalityState.any())
+
+            // Lógica de pausas para imitar tipeo humano o streaming LLM
+            val pauseTime = when (char) {
+                '.', '!', '?', '\n' -> 250L // Pausa larga al terminar oración
+                ',', ':' -> 100L            // Pausa media
+                else -> 15L                 // Escritura rápida
+            }
+            delay(pauseTime)
+        }
+    }
+
+    private suspend fun startCountdown() {
+        var countdownArea: JTextArea? = null
+        val deferred = CompletableDeferred<Unit>()
+
+        ApplicationManager.getApplication().invokeLater({
+            countdownArea = addChatMessage("⏳ Pegando código en 5...", isUser = false, isSystemLog = true)
+            deferred.complete(Unit)
+        }, ModalityState.any())
+
+        deferred.await()
+
+        for (i in 4 downTo 1) {
+            delay(1000)
+            ApplicationManager.getApplication().invokeLater({
+                countdownArea?.text = "⏳ Pegando código en $i..."
+            }, ModalityState.any())
+        }
+    }
+
+    // Modificamos addChatMessage para que devuelva el JTextArea creado
+    private fun addChatMessage(text: String, isUser: Boolean, isSystemLog: Boolean = false): JTextArea {
+        val bubblePanel = JPanel(BorderLayout(10, 10)).apply {
+            isOpaque = false
+            border = JBUI.Borders.empty(5, 5, 10, 5)
         }
 
-        // 3. Mostrar pista si lleva varios intentos
-        if (rejectionCount >= 3) {
-            hintLabel.text = "<html><div style='width: 400px;'><b>💡 Pista:</b> ${result.hint ?: "Intenta explicar la intención general."}</div></html>"
-            hintLabel.isVisible = true
+        // Placeholders para tus avatares
+        val avatarLabel = JLabel(if (isUser) " [ IMG_USER ] " else " [ IMG_AI ] ").apply {
+            font = font.deriveFont(Font.BOLD)
+            foreground = if (isUser) Color(100, 150, 200) else Color(100, 200, 100)
+            if (isSystemLog) isVisible = false
         }
 
-        // 4. Forzar que Swing redibuje todo el panel
-        this.contentPane.revalidate()
-        this.contentPane.repaint()
+        val messageArea = JTextArea(text).apply {
+            lineWrap = true
+            wrapStyleWord = true
+            isEditable = false
+            isOpaque = false
+            font = JBUI.Fonts.label()
+            if (isSystemLog) setForeground(Color.GRAY)
+        }
+
+        if (isUser) {
+            bubblePanel.add(messageArea, BorderLayout.CENTER)
+            bubblePanel.add(avatarLabel, BorderLayout.EAST)
+        } else {
+            bubblePanel.add(avatarLabel, BorderLayout.WEST)
+            bubblePanel.add(messageArea, BorderLayout.CENTER)
+        }
+
+        chatHistoryPanel.add(bubblePanel)
+        chatHistoryPanel.revalidate()
+        chatHistoryPanel.repaint()
+
+        SwingUtilities.invokeLater {
+            val verticalBar = chatScrollPane.verticalScrollBar
+            verticalBar.value = verticalBar.maximum
+        }
+
+        return messageArea
     }
 
     private fun highlightUnderstoodCode(understoodCode: String) {
         val highlighter = codePreviewArea.highlighter
-        // No borramos aquí si queremos acumular, pero para esta lógica mejor limpiar y poner lo nuevo
         highlighter.removeAllHighlights()
-
         if (understoodCode.isBlank()) return
 
-        // Intentamos encontrar el bloque de código
         val trimmedTarget = understoodCode.trim()
-        var startIndex = pastedCode.indexOf(trimmedTarget)
+        val startIndex = pastedCode.indexOf(trimmedTarget)
 
         if (startIndex != -1) {
             try {
                 highlighter.addHighlight(startIndex, startIndex + trimmedTarget.length, successHighlightPainter)
-
-                // OPCIONAL: Hacer scroll automático hacia la parte resaltada si el código es muy largo
                 codePreviewArea.modelToView2D(startIndex)?.let { rect ->
                     codePreviewArea.scrollRectToVisible(rect.bounds)
                 }
@@ -189,21 +282,10 @@ class ZombieExplanationDialog(
     private fun setLoading(loading: Boolean) {
         progressBar.isVisible = loading
         isOKActionEnabled = !loading
-        explanationTextArea.isEnabled = !loading
+        inputTextArea.isEnabled = !loading
         if (loading) {
-            statusLabel.isVisible = false
-            hintLabel.isVisible = false
-            // Limpiamos el resaltado verde mientras la IA vuelve a pensar
             codePreviewArea.highlighter.removeAllHighlights()
         }
-        this.contentPane.revalidate()
-        this.contentPane.repaint()
-    }
-
-    private fun showFeedback(message: String, color: Color) {
-        statusLabel.text = "<html><div style='width: 800px;'>$message</div></html>"
-        statusLabel.foreground = color
-        statusLabel.isVisible = true
         this.contentPane.revalidate()
         this.contentPane.repaint()
     }
