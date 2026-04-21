@@ -1,3 +1,6 @@
+<img width="1364" height="965" alt="Screenshot 2026-04-21 at 12 40 42 PM" src="https://github.com/user-attachments/assets/93ea6790-7da6-4d10-b8f6-6d3a9bbf1b16" />
+
+
 # ZombieBreaker 🧟‍♂️🛡️
 
 **ZombieBreaker** es un plugin para Android Studio diseñado para detener la práctica del "Copy-Paste" ciego. Su objetivo es asegurar que cada desarrollador entienda exactamente qué código está integrando en su proyecto antes de que este llegue al editor.
