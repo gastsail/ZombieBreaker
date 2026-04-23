@@ -32,6 +32,8 @@ To enable local code analysis, you must set up **Ollama** on your machine:
     ollama run gemma4
     ```
     *(Note: Ensure Ollama is running in the background while you are using Android Studio).*
+    *(Note: If you want the model to run faster, please download the smallest model gemma4:e2b).*
+    
 
 ---
 
@@ -103,6 +105,7 @@ Para que ZombieBreaker pueda analizar el código localmente, necesitas configura
     ollama run gemma4
     ```
     *(Nota: Mantén Ollama ejecutándose en segundo plano mientras programas en Android Studio).*
+    *(Nota: Si quieres que el modelo funcione mas rapido, es recomendable bajar gemma4:e2b).*
 
 ---
 
