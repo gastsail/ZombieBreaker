@@ -1,10 +1,13 @@
+package processor
+
 import com.intellij.codeInsight.editorActions.CopyPastePreProcessor
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.RawText
+import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.ide.CopyPasteManager
+import ui.ZombieExplanationDialog
 
 class ZombiePastePreProcessor : CopyPastePreProcessor {
 

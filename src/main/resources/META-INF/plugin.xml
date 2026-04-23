@@ -29,7 +29,10 @@
     <!-- Extensions defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <copyPastePreProcessor implementation="ZombiePastePreProcessor"/>
+        <applicationService serviceImplementation="ui.state.ZombiePluginState"/>
+        <copyPastePreProcessor implementation="processor.ZombiePastePreProcessor"/>
+        <statusBarWidgetFactory id="ZombieBreakerStatsWidget"
+                                implementation="ui.ZombieStatusBarWidgetFactory"/>
     </extensions>
     <extensions defaultExtensionNs="org.jetbrains.kotlin">
         <supportsKotlinPluginMode supportsK2="true"/>

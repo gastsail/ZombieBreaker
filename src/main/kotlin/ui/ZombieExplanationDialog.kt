@@ -1,19 +1,25 @@
+package ui
+
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBUI
 import kotlinx.coroutines.*
-import java.awt.*
+import service.OllamaService
+import ui.state.ZombiePluginState
+import java.awt.BorderLayout
+import java.awt.Color
+import java.awt.Dimension
+import java.awt.Font
 import java.awt.event.ActionEvent
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
-import java.util.Locale
+import java.util.*
 import javax.swing.*
 import javax.swing.text.DefaultHighlighter
-import kotlin.text.iterator
 
 class ZombieExplanationDialog(
     project: Project,
@@ -57,6 +63,8 @@ class ZombieExplanationDialog(
 
     private var rejectionCount = 0
     private val dialogScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    val startTime = System.currentTimeMillis()
 
     init {
         title = txtTitle
@@ -155,6 +163,8 @@ class ZombieExplanationDialog(
             try {
                 val languageToUse = if (isSpanish) "Spanish" else "English"
                 val result = OllamaService.validateExplanation(fileContext, pastedCode, explanation, languageToUse)
+                val timeSpentSeconds = (System.currentTimeMillis() - startTime) / 1000
+                val linesOfCode = pastedCode.lines().size
 
                 updateUI {
                     setLoading(false)
@@ -169,6 +179,7 @@ class ZombieExplanationDialog(
                     else "✅ Excellent! Explanation approved (Accuracy: ${result.accuracy}%)."
                     animateBotMessage(successMsg)
 
+                    ZombiePluginState.getInstance().recordWin(result.accuracy, linesOfCode, timeSpentSeconds)
                     startCountdown()
                     updateUI { close(OK_EXIT_CODE) }
 
@@ -178,6 +189,7 @@ class ZombieExplanationDialog(
                     val rejectMsg = if (isSpanish) "❌ Mmm, no me convence (Precisión: ${result.accuracy}%).\n\n${result.reason}"
                     else "❌ Hmm, I'm not convinced (Accuracy: ${result.accuracy}%).\n\n${result.reason}"
                     animateBotMessage(rejectMsg)
+                    ZombiePluginState.getInstance().recordFail(timeSpentSeconds)
 
                     updateUI {
                         if (!result.understoodCode.isNullOrBlank()) {
