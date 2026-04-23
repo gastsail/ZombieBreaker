@@ -1,5 +1,82 @@
-<img width="1364" height="965" alt="Screenshot 2026-04-21 at 12 40 42 PM" src="https://github.com/user-attachments/assets/93ea6790-7da6-4d10-b8f6-6d3a9bbf1b16" />
 
+
+# Photos
+<img width="1398" height="993" alt="Screenshot 2026-04-22 at 4 57 27 PM" src="https://github.com/user-attachments/assets/ebb99589-176f-430d-908a-2860c6e4e936" />
+
+<img width="1396" height="993" alt="Screenshot 2026-04-22 at 4 56 13 PM" src="https://github.com/user-attachments/assets/c98ae386-d0c7-4b2b-961c-a377ebddf882" />
+
+# ZombieBreaker 🧟‍♂️🛡️
+
+**ZombieBreaker** is an Android Studio plugin designed to put an end to "blind copy-pasting." Its mission is to ensure that every developer fully understands the code they are integrating into their project before it even hits the editor.
+
+---
+
+## 📝 The Concept: "Understand Before You Paste"
+
+Unlike traditional AI assistants, **ZombieBreaker** acts as a guardian for your clipboard. When you attempt to paste code from an external source (StackOverflow, documentation, LLMs, etc.), the plugin intercepts the action and challenges you:
+
+1.  **Smart Context Awareness:** The plugin analyzes the current file where you intend to paste the code to understand the environment (existing classes, variables, and logic).
+2.  **Local AI Analysis:** It uses local power to process the code sitting in your clipboard.
+3.  **Comprehension Check:** You are required to explain in your own words what that code does.
+4.  **Verification:** The plugin compares your explanation with its own real-time analysis. If your understanding is correct, the code is pasted. If not, it helps you understand it better before allowing the insertion.
+
+---
+
+## 🚀 Prerequisites
+
+To enable local code analysis, you must set up **Ollama** on your machine:
+
+1.  **Install Ollama:** Download it from [https://ollama.com/](https://ollama.com/).
+2.  **Download Gemma 4:** Open your terminal and run the following command:
+    ```bash
+    ollama run gemma4
+    ```
+    *(Note: Ensure Ollama is running in the background while you are using Android Studio).*
+    *(Note: If you want the model to run faster, please download the smallest model gemma4:e2b).*
+    
+
+---
+
+## 🛠️ Installation
+
+Currently, the plugin is distributed as a release file for manual installation:
+
+1.  **Download the Release:** Go to the [Releases](https://github.com/your-username/zombiebreaker/releases) tab and download the latest `.zip` file.
+2.  **Install in Android Studio:**
+    * Open **Android Studio**.
+    * Go to `File` > `Settings` (on macOS: `Android Studio` > `Settings`).
+    * Select the **Plugins** section.
+    * Click the gear icon (⚙️) and select **Install Plugin from Disk...**.
+    * Locate and select the downloaded `.zip` file.
+3.  **Restart:** Restart the IDE to activate the ZombieBreaker protection.
+
+---
+
+## 📖 How to Use
+
+Once installed, the plugin monitors the "Paste" action (`Ctrl+V` or `Cmd+V`):
+
+1.  Copy any external code snippet.
+2.  When you try to paste it into your Android Studio file, the **ZombieBreaker** window will appear.
+3.  Review the context analysis performed by the plugin.
+4.  Write a brief explanation of what you think the code does.
+5.  Once validated, the code will be successfully integrated into your file.
+
+---
+
+## 🔒 Privacy & Total Security
+
+ZombieBreaker is built for professional environments where security is paramount:
+
+* **100% Local Processing:** Thanks to **Ollama** and **Gemma 4**, neither your project's code nor the code you paste ever leaves your machine.
+* **No Cloud:** It requires no internet connection or third-party subscriptions.
+* **Privacy by Design:** Perfect for working on confidential or corporate projects where data leakage is not an option.
+
+---
+*ZombieBreaker - Because programming is about understanding, not just copying.*
+
+
+## [ES]
 
 # ZombieBreaker 🧟‍♂️🛡️
 
@@ -28,6 +105,7 @@ Para que ZombieBreaker pueda analizar el código localmente, necesitas configura
     ollama run gemma4
     ```
     *(Nota: Mantén Ollama ejecutándose en segundo plano mientras programas en Android Studio).*
+    *(Nota: Si quieres que el modelo funcione mas rapido, es recomendable bajar gemma4:e2b).*
 
 ---
 
@@ -69,72 +147,3 @@ ZombieBreaker está diseñado para entornos profesionales donde la seguridad es 
 ---
 *ZombieBreaker - Porque programar es entender, no solo copiar.*
 
-
-## [EN]
-# ZombieBreaker 🧟‍♂️🛡️
-
-**ZombieBreaker** is an Android Studio plugin designed to put an end to "blind copy-pasting." Its mission is to ensure that every developer fully understands the code they are integrating into their project before it even hits the editor.
-
----
-
-## 📝 The Concept: "Understand Before You Paste"
-
-Unlike traditional AI assistants, **ZombieBreaker** acts as a guardian for your clipboard. When you attempt to paste code from an external source (StackOverflow, documentation, LLMs, etc.), the plugin intercepts the action and challenges you:
-
-1.  **Smart Context Awareness:** The plugin analyzes the current file where you intend to paste the code to understand the environment (existing classes, variables, and logic).
-2.  **Local AI Analysis:** It uses local power to process the code sitting in your clipboard.
-3.  **Comprehension Check:** You are required to explain in your own words what that code does.
-4.  **Verification:** The plugin compares your explanation with its own real-time analysis. If your understanding is correct, the code is pasted. If not, it helps you understand it better before allowing the insertion.
-
----
-
-## 🚀 Prerequisites
-
-To enable local code analysis, you must set up **Ollama** on your machine:
-
-1.  **Install Ollama:** Download it from [https://ollama.com/](https://ollama.com/).
-2.  **Download Gemma 4:** Open your terminal and run the following command:
-    ```bash
-    ollama run gemma4
-    ```
-    *(Note: Ensure Ollama is running in the background while you are using Android Studio).*
-
----
-
-## 🛠️ Installation
-
-Currently, the plugin is distributed as a release file for manual installation:
-
-1.  **Download the Release:** Go to the [Releases](https://github.com/your-username/zombiebreaker/releases) tab and download the latest `.zip` file.
-2.  **Install in Android Studio:**
-    * Open **Android Studio**.
-    * Go to `File` > `Settings` (on macOS: `Android Studio` > `Settings`).
-    * Select the **Plugins** section.
-    * Click the gear icon (⚙️) and select **Install Plugin from Disk...**.
-    * Locate and select the downloaded `.zip` file.
-3.  **Restart:** Restart the IDE to activate the ZombieBreaker protection.
-
----
-
-## 📖 How to Use
-
-Once installed, the plugin monitors the "Paste" action (`Ctrl+V` or `Cmd+V`):
-
-1.  Copy any external code snippet.
-2.  When you try to paste it into your Android Studio file, the **ZombieBreaker** window will appear.
-3.  Review the context analysis performed by the plugin.
-4.  Write a brief explanation of what you think the code does.
-5.  Once validated, the code will be successfully integrated into your file.
-
----
-
-## 🔒 Privacy & Total Security
-
-ZombieBreaker is built for professional environments where security is paramount:
-
-* **100% Local Processing:** Thanks to **Ollama** and **Gemma 4**, neither your project's code nor the code you paste ever leaves your machine.
-* **No Cloud:** It requires no internet connection or third-party subscriptions.
-* **Privacy by Design:** Perfect for working on confidential or corporate projects where data leakage is not an option.
-
----
-*ZombieBreaker - Because programming is about understanding, not just copying.*
