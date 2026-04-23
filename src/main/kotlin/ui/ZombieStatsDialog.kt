@@ -66,7 +66,7 @@ class ZombieStatsDialog(project: Project) : DialogWrapper(project) {
         mainPanel.add(JSeparator().apply { maximumSize = Dimension(Short.MAX_VALUE.toInt(), 1) })
         mainPanel.add(Box.createVerticalStrut(25))
 
-        // 2. CÁLCULO CORREGIDO DEL BRAIN POWER
+        // 2. CÁLCULO CORREGIDO DEL BRAIN POWERF
         val totalAttempts = stats.wins + stats.fails
         val avgAccuracy = if (totalAttempts > 0) stats.totalAccuracy / totalAttempts else 0
 
