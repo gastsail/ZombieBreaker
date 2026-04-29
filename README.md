@@ -42,7 +42,7 @@ To enable local code analysis, you must set up **Ollama** on your machine:
 
 Currently, the plugin is distributed as a release file for manual installation:
 
-1.  **Download the Release:** Go to the [Releases](https://github.com/your-username/zombiebreaker/releases) tab and download the latest `.zip` file.
+1.  **Download the Release:** Go to the [Releases](https://github.com/gastsail/zombiebreaker/releases) tab and download the latest `.zip` file.
 2.  **Install in Android Studio:**
     * Open **Android Studio**.
     * Go to `File` > `Settings` (on macOS: `Android Studio` > `Settings`).
